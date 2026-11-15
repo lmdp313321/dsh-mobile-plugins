@@ -1,0 +1,35 @@
+{
+  "name": "@dsh-mobile/tts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "朗读 AI 回复：把 Android 壳侧已存在但无人调用的 TTS 接口接出来，做成可听的阅读模式。",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  },
+  "keywords": ["dsh-plugin", "mobile", "android", "tts", "speech"],
+  "license": "MIT"
+}

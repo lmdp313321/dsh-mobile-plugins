@@ -1,0 +1,11 @@
+- insert:
+    - id: dsh-mobile-tts
+      name: '@dsh-mobile/tts'
+      config:
+        # 每次送入朗读的最大字符数。Android TTS 引擎对超长文本会截断或卡死，
+        # 按句切段送进去更稳；240 字约等于一段中等长度的中文回复。
+        chunkChars: 240
+        # 语速倍率。1.0 是系统默认；中文信息密度高，1.1 左右听感更自然。
+        rate: 1.1
+        # 音高。1.0 为默认，不调。
+        pitch: 1.0
