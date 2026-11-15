@@ -1,0 +1,17 @@
+- insert:
+    - id: dsh-mobile-snippets
+      name: '@dsh-mobile/snippets'
+      config:
+        # 内置片段：{ title 是面板上显示的名字，text 是点一下要填入输入框的内容 }
+        # 用户可以在 HOST 端点保存自己的片段，这里是出厂默认值。
+        snippets:
+          - title: 继续
+            text: 继续
+          - title: 解释一下
+            text: 请用简单的话解释一下上面这段内容
+          - title: 精简
+            text: 请把上面的回复压缩到三句话以内
+          - title: 换个说法
+            text: 请用另一种更通俗的说法重写上面的回复
+        # 最多保留多少条自定义片段，超出时提示用户先删旧的。
+        maxCustom: 40
