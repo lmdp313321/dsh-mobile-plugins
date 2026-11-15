@@ -184,20 +184,29 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * 从一条 AI 消息里取出纯文本。
+     * 从一条 AI 节点的 `blocks` 里取出纯文本。
      *
-     * 只取 `text` 块；`reasoning` 是模型的思考过程，念出来没有意义。
+     * ## 字段名是实测出来的，不是猜的
+     *
+     * Chat 节点里的块用 **`kind`** 标记类型（`{kind:'text', text}`），
+     * 而会话日志里的消息块用 `type`（`{type:'text', text}`）——两套结构。
+     * 上游 `assistantText()` 的实现就是 `block.kind === 'text' ? block.text : ...`。
+     * 这里两个字段都认，避免节点结构与日志结构混用时读不出字。
+     *
+     * 只取正文：`reasoning` 是模型的思考过程，念出来没有意义；
      * 工具调用与技术块也跳过——用户要听的是回答，不是调试信息。
-     * @param content - 消息 content（块数组或字符串）。
+     * @param blocks - 节点的块数组，或消息的 content（块数组），或纯字符串。
      * @returns 拼接后的纯文本。
      */
-    function contentToText(content) {
-      if (typeof content === 'string') return content
-      if (!Array.isArray(content)) return ''
+    function contentToText(blocks) {
+      if (typeof blocks === 'string') return blocks
+      if (!Array.isArray(blocks)) return ''
       const parts = []
-      for (const block of content) {
+      for (const block of blocks) {
         if (block === null || typeof block !== 'object') continue
-        if (block.type === 'text' && typeof block.text === 'string') {
+        // 节点用 kind，日志用 type——两者都认。
+        const marker = block.kind ?? block.type
+        if (marker === 'text' && typeof block.text === 'string' && block.text !== '') {
           parts.push(block.text)
         }
       }
@@ -359,11 +368,41 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * 单条 AI 回复的朗读控件。
+     * 单条 AI 回复的朗读控件（外层）。
+     *
+     * 只做一件事：把 `useChat` 归一成恒定的钩子再交给主体。
+     * 之所以拆两层——钩子不能在条件分支里调用，而 `useChat` 在旧宿主上可能缺席；
+     * 用恒定的替身钩子顶替，调用次数每次都一样，既不违反 Hooks 规则，
+     * 也不会因为宿主版本差异崩掉整个槽位。
      * @param props - 槽位下发属性，含 `messageId`。
      * @returns 控件元素。
      */
     function SpeakAction(props) {
+      const useChatHook = typeof props.useChat === 'function' ? props.useChat : useNoChat
+      return SpeakActionBody({ ...props, useChatHook })
+    }
+
+    /**
+     * `useChat` 缺席时的替身钩子。
+     *
+     * **关键约束**：必须与真钩子的 Hook 调用次数**完全一致**（0 次）。
+     * 实测教训：这里原本写了 `React.useState(0)`，结果「有 useChat」时 13 个 Hook、
+     * 「无 useChat」时 14 个——次数不一致同样会让 React 报
+     * "rendered fewer hooks than expected" 并崩掉槽位，和条件调用是同一个错。
+     * 真 `useChat` 是宿主注入的外部钩子，不在本组件内调用任何 Hook，
+     * 所以替身也必须是一个不调 Hook 的普通函数。
+     * @returns 恒为 null 的 Chat 节点表。
+     */
+    function useNoChat() {
+      return null
+    }
+
+    /**
+     * 控件主体。
+     * @param props - 槽位属性，外加归一的 `useChatHook`。
+     * @returns 控件元素。
+     */
+    function SpeakActionBody(props) {
       useStyles()
       const t = translator()
       const { state, setState, play, stop, stateRef } = useReader()
@@ -397,31 +436,50 @@ window.__ModuleLoader__.load({
       }, [setState])
 
       /**
-       * 从槽位属性里取消息正文。
+       * 读取 Chat 快照里的 assistant 节点正文。
        *
-       * 槽位下发的是 `messageId`；正文要从 chat 投影里按 id 找。
-       * 找不到时返回 null——宁可按钮禁用，也不读错内容。
+       * ## 为什么这样取
+       *
+       * 槽位只下发 `messageId`（实测自 ui-chat 的 `renderSlot(..., { messageId })`），
+       * 正文必须自己去 Chat 快照里找。`useChat` 是个**选择器钩子**（签名 `useChat(selector)`），
+       * 不是返回整个快照的对象——早先按 `useChat()` 写是错的。
+       *
+       * ## 为什么无条件调用
+       *
+       * `useChat` 在槽位的 `standardProps` 里，由槽位渲染器恒定注入，所以它一定存在。
+       * **绝不能写成 `props.useChat ? props.useChat(...) : null`**：那是条件 hook 调用，
+       * 一旦某次渲染条件翻转，React 会报 "rendered fewer hooks than expected" 并崩掉整个槽位。
+       * 钩子调用次数必须每次渲染都相同，容错只能放在选择器内部。
+       *
+       * Chat 快照的 `nodes` 是 `Map<nodeKey, node>`，assistant 节点形状为
+       * `{ kind:'assistant', messageId, blocks }`（实测自 ui-chat 的 `finalNode()`）。
+       * 按 `messageId` 反查再取 `blocks`，与上游结构一致。
+       */
+      const chatNodes = props.useChatHook((value) => {
+        const nodes = value?.nodes
+        return nodes === undefined || nodes === null ? null : nodes
+      })
+
+      /**
+       * 取正文。取不到时返回空串，按钮因此禁用——
+       * 宁可点不了，也不读错内容或读到别人的回复。
        */
       const text = React.useMemo(() => {
         const id = props?.messageId
-        if (id === undefined) return ''
+        if (id === undefined || id === null || chatNodes === null || chatNodes === undefined) return ''
+        const target = String(id)
         try {
-          const chat = props?.useChat?.()
-          const messages = chat?.messages ?? chat?.byId ?? null
-          if (messages === null) return ''
-          if (Array.isArray(messages)) {
-            const found = messages.find((entry) => String(entry?.id) === String(id))
-            return contentToText(found?.content)
-          }
-          if (typeof messages === 'object') {
-            const found = messages[String(id)]
-            return contentToText(found?.content)
+          const values = typeof chatNodes.values === 'function' ? chatNodes.values() : Object.values(chatNodes)
+          for (const node of values) {
+            if (node === null || typeof node !== 'object') continue
+            if (String(node.messageId ?? '') !== target) continue
+            return contentToText(node.blocks ?? node.content)
           }
           return ''
         } catch {
           return ''
         }
-      }, [props?.messageId, props?.useChat])
+      }, [props?.messageId, chatNodes])
 
       const beginOrResume = React.useCallback(() => {
         const list = segments.length > 0 ? segments : splitSegments(text, config.chunkChars)
