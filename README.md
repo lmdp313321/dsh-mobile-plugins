@@ -55,7 +55,7 @@ dsh plugin --profile web add lmdp313321/dsh-mobile-plugins/tts
 
 | 插件 | 解决的痛点 | 状态 |
 |---|---|---|
-| `tts` 语音朗读 | 走路/躺着时听 AI 讲 | 🚧 开发中 |
+| `tts` 语音朗读 | 走路/躺着时听 AI 讲 | ✅ v1.0.0（待重启验证）|
 | `notify` 完成提醒 | 切到微信后不知道任务跑完了 | 📋 计划 |
 | `clipboard` 剪贴板互通 | 手机复制的文字要在 DSH 里用 | 📋 计划 |
 | `share` 分享即提问 | 看到任何内容分享 → 直接问 AI | 📋 计划 |
