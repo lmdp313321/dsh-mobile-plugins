@@ -24,6 +24,7 @@
         {
           "id": "xd-strip",
           "icon": "chart",
+          "text": { "zh": "XD池 · 点开状态", "en": "XD Pool · tap" },
           "panel": "xd-panel"
         }
       ],
