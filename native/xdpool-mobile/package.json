@@ -1,0 +1,47 @@
+{
+  "name": "dsh-mobile-xdpool",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "把 dsh-xdpool 的只读状态看板和几个关键设置搬到 dsh-go 手机原生界面——原插件设置页在手机上打不开（只能网页端设置）。",
+  "main": "lib/index.js",
+  "files": ["lib", "cordis.patch.yml"],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.1-rc.2 <0.3.0-0"
+  },
+  "dshGo": {
+    "v": 1,
+    "title": { "zh": "XD 池", "en": "XD Pool" },
+    "icon": "chart",
+    "contributes": {
+      "composer.strip": [
+        {
+          "id": "xd-strip",
+          "icon": "chart",
+          "panel": "xd-panel"
+        }
+      ],
+      "panels": [
+        {
+          "id": "xd-panel",
+          "title": { "zh": "XD Pool 状态", "en": "XD Pool status" },
+          "icon": "chart",
+          "placement": ["session.tab", "features", "chat.panel"]
+        }
+      ]
+    },
+    "minApp": "1.0.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmdp313321/dsh-mobile-plugins.git",
+    "directory": "native/xdpool-mobile"
+  },
+  "keywords": ["dsh-go", "dsh-go-plugin", "mobile", "xdpool", "token"]
+}

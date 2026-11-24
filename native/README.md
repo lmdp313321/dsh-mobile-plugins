@@ -12,6 +12,7 @@
 | `snippets-mobile` | 本地自研 | — | 手机打字慢，常用语一点就填入 | 输入框上方「快捷语」胶囊 → 面板 |
 | `tts-mobile` | 本地自研 | — | 走路躺着时听 AI 回复 | 长按回复 →「朗读」 |
 | `suggestions-mobile` | [dsh-suggestion-chips](https://github.com/taxueseek/dsh-suggestion-chips) | 7★ | 读完回复不知道下一步做啥，点建议就填入 | 长按回复 →「建议内容」 |
+| `xdpool-mobile` | 本机已装 [dsh-xdpool](https://github.com/XDTrees/dsh-xdpool) | — | xdpool 设置页在手机上打不开（「暂不支持在这里设置」），把状态看板 + 关键设置搬进原生界面 | 输入框上方状态条 → 面板 |
 
 > 星数来自 GitHub API，采集于 2026-11-24，会变动。
 
