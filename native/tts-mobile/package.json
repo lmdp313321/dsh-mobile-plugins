@@ -1,0 +1,40 @@
+{
+  "name": "dsh-mobile-tts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "手机语音朗读：把 AI 的回复读出来，走路、做饭、躺着时听比看方便。长按回复菜单点「朗读」即可。",
+  "main": "lib/index.js",
+  "files": ["lib", "cordis.patch.yml"],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.1-rc.2 <0.3.0-0"
+  },
+  "dshGo": {
+    "v": 1,
+    "title": { "zh": "朗读", "en": "Read aloud" },
+    "icon": "speaker",
+    "wants": ["message"],
+    "contributes": {
+      "message.actions": [
+        { "id": "tts-read", "label": { "zh": "朗读", "en": "Read" }, "icon": "speaker" },
+        { "id": "tts-stop", "label": { "zh": "停止", "en": "Stop" }, "icon": "stop" }
+      ],
+      "composer.strip": [
+        { "id": "tts-strip", "icon": "speaker", "text": { "zh": "朗读就绪", "en": "TTS ready" } }
+      ]
+    },
+    "minApp": "1.0.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmdp313321/dsh-mobile-plugins.git",
+    "directory": "native/tts-mobile"
+  },
+  "keywords": ["dsh-go", "dsh-go-plugin", "mobile", "tts", "speech"]
+}

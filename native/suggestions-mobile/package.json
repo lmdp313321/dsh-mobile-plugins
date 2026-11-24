@@ -1,0 +1,38 @@
+{
+  "name": "dsh-mobile-suggestions",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "回复下方的建议胶囊：模型给出的下一步选项，手机上一点就填入输入框，不用自己组织语言。移植自高星插件 dsh-suggestion-chips。",
+  "main": "lib/index.js",
+  "files": ["lib", "cordis.patch.yml"],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.1-rc.2 <0.3.0-0"
+  },
+  "dshGo": {
+    "v": 1,
+    "title": { "zh": "建议", "en": "Suggestions" },
+    "icon": "sparkle",
+    "contributes": {
+      "message.actions": [
+        { "id": "sg-copy", "label": { "zh": "建议内容", "en": "Suggestions" }, "icon": "sparkle" }
+      ],
+      "composer.strip": [
+        { "id": "sg-strip", "icon": "sparkle", "text": { "zh": "建议就绪", "en": "Suggest ready" } }
+      ]
+    },
+    "minApp": "1.0.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmdp313321/dsh-mobile-plugins.git",
+    "directory": "native/suggestions-mobile"
+  },
+  "keywords": ["dsh-go", "dsh-go-plugin", "mobile", "suggestions", "chips"]
+}

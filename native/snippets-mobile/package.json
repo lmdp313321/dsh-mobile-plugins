@@ -1,0 +1,48 @@
+{
+  "name": "dsh-mobile-snippets",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "手机快捷短语：把常说的一句话存成按钮，输入框上方一点就填入，不用再一个个字敲。",
+  "main": "lib/index.js",
+  "files": ["lib", "cordis.patch.yml"],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.1-rc.2 <0.3.0-0"
+  },
+  "dshGo": {
+    "v": 1,
+    "title": { "zh": "快捷语", "en": "Snippets" },
+    "icon": "bolt",
+    "wants": ["clipboard"],
+    "contributes": {
+      "composer.actions": [
+        {
+          "id": "snippets-open",
+          "label": { "zh": "快捷语", "en": "Snippets" },
+          "icon": "bolt"
+        }
+      ],
+      "panels": [
+        {
+          "id": "snippets-panel",
+          "title": { "zh": "快捷短语", "en": "Quick phrases" },
+          "icon": "bolt",
+          "placement": ["session.tab", "features", "chat.panel"]
+        }
+      ]
+    },
+    "minApp": "1.0.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmdp313321/dsh-mobile-plugins.git",
+    "directory": "native/snippets-mobile"
+  },
+  "keywords": ["dsh-go", "dsh-go-plugin", "mobile", "snippets"]
+}
